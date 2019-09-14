@@ -1,11 +1,13 @@
 module Main exposing (..)
 
 import Browser exposing (Document, UrlRequest)
-import Browser.Navigation exposing (Key)
-import Html exposing (Html, button, div, header, li, span, text, ul)
-import Html.Attributes exposing (class, classList)
-import Html.Events exposing (onClick)
+import Browser.Navigation as Nav exposing (Key)
+import Html exposing (div)
+import Html.Attributes exposing (class)
+import Types exposing (..)
 import Url exposing (Url)
+import Url.Parser as Parser exposing ((</>))
+import View exposing (card)
 import Wods exposing (Wod, wods)
 
 
@@ -19,28 +21,35 @@ type alias Flags =
 
 type alias Model =
     { category : Maybe Wods.Category
+    , workoutType : Maybe Wods.WorkoutType
+    , navigationKey : Key
     }
 
 
 init : Flags -> Url -> Key -> ( Model, Cmd Msg )
-init _ _ _ =
-    ( { category = Nothing }, Cmd.none )
+init _ _ key =
+    ( { category = Nothing, workoutType = Nothing, navigationKey = key }, Cmd.none )
 
 
 
 ---- UPDATE ----
 
 
-type Msg
-    = FilterOnCategory (Maybe Wods.Category)
-    | NoOp
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        FilterOnCategory cat ->
-            ( { model | category = cat }, Cmd.none )
+        FilterOnCategory category ->
+            ( { model | category = category }, Cmd.none )
+
+        FilterOnWorkoutType workoutType ->
+            ( { model | workoutType = workoutType }, Cmd.none )
+
+        UrlChanged url ->
+            let
+                _ =
+                    Debug.log "url" url
+            in
+            ( model, Nav.pushUrl model.navigationKey (Url.toString url) )
 
         NoOp ->
             ( model, Cmd.none )
@@ -50,66 +59,9 @@ update msg model =
 ---- VIEW ----
 
 
-pill : Maybe Wods.Category -> Html Msg
-pill category =
-    case category of
-        Just Wods.Hero ->
-            div [ class "inline-block rounded-full px-3 py-1 text-sm font-semibold text-center bg-green-200 text-green-700" ]
-                [ text "Hero"
-                ]
-
-        Just Wods.Girl ->
-            div [ class "inline-block rounded-full px-3 py-1 text-sm font-semibold text-center bg-pink-200 text-pink-700" ]
-                [ text "The Girls"
-                ]
-
-        Nothing ->
-            text ""
-
-
-wodExercises : Wods.WodPart -> Html Msg
-wodExercises exercise =
-    li []
-        [ div []
-            [ text (Wods.exerciseAmount exercise.reps ++ " ")
-            , text (Wods.exerciseToString exercise.exercise)
-            , span [ class "text-gray-500" ]
-                [ text (Wods.weightToString exercise.weight)
-                ]
-            ]
-        ]
-
-
-roundsForTime : Maybe Int -> Html Msg
-roundsForTime rounds =
-    case rounds of
-        Just i ->
-            div [ class "text-sm text-gray-500" ] [ text (String.fromInt i ++ " rounds for time of:") ]
-
-        Nothing ->
-            text ""
-
-
-displayCard : Wod -> Html Msg
-displayCard wod =
-    div [ class "bg-white rounded shadow-lg flex flex-col justify-between" ]
-        [ div [ class "p-6" ]
-            [ header [ class "flex items-center justify-between" ]
-                [ div [ class "font-bold" ]
-                    [ text wod.name
-                    ]
-                , pill
-                    wod.category
-                ]
-            , roundsForTime wod.rounds
-            , ul [ class "text-gray-700 mt-4" ] (wod.parts |> List.map wodExercises)
-            ]
-        ]
-
-
-filterWorkouts : Maybe Wods.Category -> Wod -> Bool
-filterWorkouts model wod =
-    case ( model, wod.category ) of
+filterBySelectedCategory : Maybe Wods.Category -> Wod -> Bool
+filterBySelectedCategory category wod =
+    case ( category, wod.category ) of
         ( Just cat, Just wCat ) ->
             cat == wCat
 
@@ -123,37 +75,47 @@ filterWorkouts model wod =
             True
 
 
-filterButton : Maybe Wods.Category -> Maybe Wods.Category -> String -> Html Msg
-filterButton cat newCat innerText =
-    button
-        [ class "inline-block rounded-full px-3 py-1 text-sm font-semibold\n        text-center bg-gray-200 text-gray-700 mr-4"
-        , classList
-            [ ( "bg-blue-200 text-blue-700"
-              , cat == newCat
-              )
-            ]
-        , onClick (FilterOnCategory newCat)
-        ]
-        [ text innerText ]
+filterBySelectedWorkoutType : Maybe Wods.WorkoutType -> Wod -> Bool
+filterBySelectedWorkoutType workoutType wod =
+    case ( workoutType, wod.workoutType ) of
+        ( Just (Wods.EMOM _), Wods.EMOM _ ) ->
+            True
+
+        ( Just w, wt ) ->
+            w == wt
+
+        ( Nothing, _ ) ->
+            True
 
 
 view : Model -> Document Msg
-view model =
+view { category, workoutType } =
     { title = "WillWOD"
     , body =
         [ div [ class "grid mt-10 mb-20" ]
             [ div [ class "grid--cards mb-10 md:flex justify-between items-center" ]
                 [ div []
                     [ div [ class "mb-2" ]
-                        [ filterButton model.category Nothing "All"
-                        , filterButton model.category (Just Wods.Girl) "Girl"
-                        , filterButton model.category (Just Wods.Hero) "Hero"
+                        [ View.workoutCategoryButton category Nothing "All"
+                        , View.workoutCategoryButton category (Just Wods.Girl) "Girl"
+                        , View.workoutCategoryButton category (Just Wods.Hero) "Hero"
+                        ]
+                    , div []
+                        [ View.workoutTypeButton workoutType Nothing "All"
+                        , View.workoutTypeButton workoutType (Just Wods.ForTime) "For Time"
+                        , View.workoutTypeButton workoutType
+                            (Just (Wods.EMOM 0))
+                            "EMOM"
                         ]
                     ]
                 ]
             , div
                 [ class "grid--cards" ]
-                (wods |> List.filter (filterWorkouts model.category) |> List.map displayCard)
+                (wods
+                    |> List.filter (filterBySelectedCategory category)
+                    |> List.filter (filterBySelectedWorkoutType workoutType)
+                    |> List.map card
+                )
             ]
         ]
     }
@@ -164,8 +126,13 @@ view model =
 
 
 onUrlRequest : UrlRequest -> Msg
-onUrlRequest _ =
-    NoOp
+onUrlRequest urlRequest =
+    case urlRequest of
+        Browser.Internal url ->
+            UrlChanged url
+
+        Browser.External _ ->
+            NoOp
 
 
 onUrlChange : Url -> Msg

@@ -1,8 +1,9 @@
 module Wods exposing (..)
 
 
-type WodType
+type WorkoutType
     = ForTime
+    | EMOM Int
 
 
 type Category
@@ -13,6 +14,7 @@ type Category
 type WodReps
     = Num Int
     | Cal2 Int Int
+    | Min Int
 
 
 type WodWeight
@@ -26,8 +28,26 @@ type Exercise
     | Deadlift
     | DevilPress
     | HangPowerClean
+    | PowerClean
     | PushJerk
+    | Rest
     | Row
+
+
+type alias WodPart =
+    { reps : WodReps
+    , weight : ( Maybe WodWeight, Maybe WodWeight )
+    , exercise : Exercise
+    }
+
+
+type alias Wod =
+    { name : String
+    , category : Maybe Category
+    , workoutType : WorkoutType
+    , parts : List WodPart
+    , rounds : Maybe Int
+    }
 
 
 unitToString : WodWeight -> String
@@ -81,8 +101,14 @@ exerciseToString exercise =
         HangPowerClean ->
             "hang power clean"
 
+        PowerClean ->
+            "power clean"
+
         PushJerk ->
             "push jerk"
+
+        Rest ->
+            "rest"
 
         Row ->
             "row"
@@ -97,28 +123,15 @@ exerciseAmount reps =
         Cal2 a b ->
             String.fromInt a ++ "/" ++ String.fromInt b
 
-
-type alias WodPart =
-    { reps : WodReps
-    , weight : ( Maybe WodWeight, Maybe WodWeight )
-    , exercise : Exercise
-    }
-
-
-type alias Wod =
-    { name : String
-    , category : Maybe Category
-    , wodType : WodType
-    , parts : List WodPart
-    , rounds : Maybe Int
-    }
+        Min min ->
+            String.fromInt min ++ " min "
 
 
 wods : List Wod
 wods =
     [ { name = "Grace"
       , category = Just Girl
-      , wodType = ForTime
+      , workoutType = ForTime
       , rounds = Nothing
       , parts =
             [ { reps = Num 30
@@ -129,7 +142,7 @@ wods =
       }
     , { name = "DT"
       , category = Just Hero
-      , wodType = ForTime
+      , workoutType = ForTime
       , rounds = Just 5
       , parts =
             [ { reps = Num 12
@@ -148,7 +161,7 @@ wods =
       }
     , { name = "Devil in the Row"
       , category = Nothing
-      , wodType = ForTime
+      , workoutType = ForTime
       , rounds = Just 10
       , parts =
             [ { reps = Cal2 9 7
@@ -162,6 +175,41 @@ wods =
             , { reps = Num 3
               , weight = ( Just (Kg 15), Just (Kg 10) )
               , exercise = DevilPress
+              }
+            ]
+      }
+    , { name = "190617-Mayhem"
+      , category = Nothing
+      , workoutType = EMOM 23
+      , rounds = Nothing
+      , parts =
+            [ { reps = Num 5
+              , weight = ( Nothing, Nothing )
+              , exercise = PowerClean
+              }
+            , { reps = Min 1
+              , weight = ( Nothing, Nothing )
+              , exercise = Rest
+              }
+            , { reps = Num 3
+              , weight = ( Nothing, Nothing )
+              , exercise = PowerClean
+              }
+            , { reps = Min 1
+              , weight = ( Nothing, Nothing )
+              , exercise = Rest
+              }
+            , { reps = Num 1
+              , weight = ( Nothing, Nothing )
+              , exercise = PowerClean
+              }
+            , { reps = Min 1
+              , weight = ( Nothing, Nothing )
+              , exercise = Rest
+              }
+            , { reps = Num 5
+              , weight = ( Nothing, Nothing )
+              , exercise = PowerClean
               }
             ]
       }
