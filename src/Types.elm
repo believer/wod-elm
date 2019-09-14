@@ -17,6 +17,7 @@ type Msg
     | UrlChanged Url
     | UpdateDecimalSystem
     | ChangeWorkoutLevel Wod
+    | UpdateQuery String
 
 
 type alias Model =
@@ -24,5 +25,6 @@ type alias Model =
     , workoutType : Maybe WorkoutType
     , decimalSystem : DecimalSystem
     , navigationKey : Key
+    , searchQuery : String
     , wods : List Wod
     }

@@ -2,9 +2,11 @@ module Main exposing (..)
 
 import Browser exposing (Document, UrlRequest)
 import Browser.Navigation as Nav exposing (Key)
-import Html exposing (button, div, text)
-import Html.Attributes exposing (class)
-import Html.Events exposing (onClick)
+import Html exposing (button, div, header, input, text)
+import Html.Attributes exposing (class, placeholder, type_, value)
+import Html.Events exposing (onClick, onInput)
+import Svg exposing (path, svg)
+import Svg.Attributes exposing (d, viewBox)
 import Types exposing (..)
 import Url exposing (Url)
 import View exposing (card)
@@ -26,6 +28,7 @@ init _ _ key =
       , navigationKey = key
       , decimalSystem = Metric
       , wods = wods
+      , searchQuery = ""
       }
     , Cmd.none
     )
@@ -65,6 +68,9 @@ update msg model =
             , Cmd.none
             )
 
+        UpdateQuery query ->
+            ( { model | searchQuery = query }, Cmd.none )
+
         NoOp ->
             ( model, Cmd.none )
 
@@ -85,6 +91,18 @@ toggleWorkoutLevel name wod =
 
 
 ---- VIEW ----
+
+
+filterBySearchQuery : String -> Wod -> Bool
+filterBySearchQuery query wod =
+    let
+        lowerCaseQuery =
+            query |> String.toLower
+
+        wodName =
+            wod.name |> String.toLower
+    in
+    String.contains lowerCaseQuery wodName
 
 
 filterBySelectedCategory : Maybe Wods.Category -> Wod -> Bool
@@ -120,10 +138,11 @@ filterBySelectedWorkoutType workoutType wod =
 
 
 view : Model -> Document Msg
-view ({ category, workoutType } as model) =
+view ({ category, workoutType, searchQuery } as model) =
     let
         filteredWods =
             model.wods
+                |> List.filter (filterBySearchQuery searchQuery)
                 |> List.filter (filterBySelectedCategory category)
                 |> List.filter (filterBySelectedWorkoutType workoutType)
                 |> List.reverse
@@ -131,7 +150,38 @@ view ({ category, workoutType } as model) =
     in
     { title = "WillWOD"
     , body =
-        [ div [ class "grid mt-10 mb-20" ]
+        [ header [ class "grid mt-16" ]
+            [ div
+                [ class "flex items-center justify-between border-b pb-4 flex-wrap sm:h-16 grid--center"
+                ]
+                [ div [] []
+                , div [ class "flex text-gray-700 items-center mt-4 sm:mt-0" ]
+                    [ div
+                        [ class "bg-gray-200 flex items-center px-4 py-3 border-2 border-gray-200 focus-within:bg-white rounded focus-within:border-blue-400"
+                        ]
+                        [ svg
+                            [ viewBox "0 0 20 20"
+                            , Svg.Attributes.class "w-4 mr-4"
+                            ]
+                            [ path
+                                [ Svg.Attributes.class "fill-current"
+                                , d "M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"
+                                ]
+                                []
+                            ]
+                        , input
+                            [ class "appearance-none block w-full bg-transparent text-gray-700 leading-tight focus:outline-none"
+                            , placeholder "Find workout"
+                            , type_ "text"
+                            , onInput UpdateQuery
+                            , value searchQuery
+                            ]
+                            []
+                        ]
+                    ]
+                ]
+            ]
+        , div [ class "grid mt-10 mb-20" ]
             [ div [ class "grid--center mb-10 md:flex justify-between items-center" ]
                 [ div []
                     [ div [ class "mb-2" ]
