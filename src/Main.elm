@@ -7,7 +7,6 @@ import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Types exposing (..)
 import Url exposing (Url)
-import Url.Parser as Parser exposing ((</>))
 import View exposing (card)
 import Wods exposing (Wod, WorkoutLevel(..), wods)
 
@@ -142,7 +141,10 @@ view ({ category, workoutType } as model) =
                         ]
                     ]
                 , div [ class "flex items-center mt-4 md:mt-0" ]
-                    [ button [ class "bg-blue-500 hover:bg-blue-700\n                    text-white\n\n                    font-bold py-2 px-4\n                    rounded-full", onClick UpdateDecimalSystem ]
+                    [ button
+                        [ class "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+                        , onClick UpdateDecimalSystem
+                        ]
                         [ case model.decimalSystem of
                             Metric ->
                                 text "Imperial"
