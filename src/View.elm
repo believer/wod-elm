@@ -3,6 +3,7 @@ module View exposing (..)
 import Html exposing (Attribute, Html, a, button, div, header, li, span, text, ul)
 import Html.Attributes exposing (class, classList, href)
 import Html.Events exposing (onClick)
+import Markdown
 import Types exposing (..)
 import WodHelpers exposing (weightToString)
 import Wods exposing (Category, Wod, WodPart, WorkoutType)
@@ -103,5 +104,13 @@ card model wod =
                     |> List.map
                         (wodExercises model.decimalSystem)
                 )
+            , case wod.description of
+                Just description ->
+                    div [ class "mt-4 text-xs text-gray-500 markdown" ]
+                        [ Markdown.toHtml [ class "markdown" ] description
+                        ]
+
+                Nothing ->
+                    text ""
             ]
         ]

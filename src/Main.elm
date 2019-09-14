@@ -128,6 +128,7 @@ view ({ category, workoutType } as model) =
                 (wods
                     |> List.filter (filterBySelectedCategory category)
                     |> List.filter (filterBySelectedWorkoutType workoutType)
+                    |> List.reverse
                     |> List.map (card model)
                 )
             ]

@@ -45,6 +45,7 @@ type alias Wod =
     { name : String
     , category : Maybe Category
     , workoutType : WorkoutType
+    , description : Maybe String
     , parts : List WodPart
     , rounds : Maybe Int
     }
@@ -100,6 +101,7 @@ wods =
       , category = Just Girl
       , workoutType = ForTime
       , rounds = Nothing
+      , description = Nothing
       , parts =
             [ { reps = Num 30
               , weight = ( Just (Kg 61), Just (Kg 43) )
@@ -111,6 +113,7 @@ wods =
       , category = Just Hero
       , workoutType = ForTime
       , rounds = Just 5
+      , description = Nothing
       , parts =
             [ { reps = Num 12
               , weight = ( Just (Kg 70), Just (Kg 47) )
@@ -130,6 +133,7 @@ wods =
       , category = Nothing
       , workoutType = ForTime
       , rounds = Just 10
+      , description = Just "Perfect pacing practice, try to keep the same pace through all ten rounds."
       , parts =
             [ { reps = Cal2 9 7
               , weight = ( Nothing, Nothing )
@@ -149,6 +153,14 @@ wods =
       , category = Nothing
       , workoutType = EMOM 23
       , rounds = Nothing
+      , description = Just """
+Each set EMOM 5 min, then 1 min rest before next EMOM.
+
+* First set (5 reps) light weight, touch and go
+* Second set (3 reps) medium weight, touch and go
+* Third set (1 rep - E30s) heavy weight
+* Last set (5 reps) same as first set
+      """
       , parts =
             [ { reps = Num 5
               , weight = ( Nothing, Nothing )
@@ -180,5 +192,14 @@ wods =
               }
             ]
       }
+    , { name = "WZAOC 4"
+      , category = Nothing
+      , workoutType = EMOM 23
+      , rounds = Nothing
+      , description = Just """
+Perform in any order, until completion of total work. Can be broken down or performed in any order.
+      """
+      , parts =
+            []
+      }
     ]
-        |> List.reverse
