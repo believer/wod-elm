@@ -9,7 +9,7 @@ This project is bootstrapped with [Create Elm App](https://github.com/halfzebra/
 ## Get started
 
 ```sh
-$ g clone https://github.com/believer/wod-elm.git
+$ git clone https://github.com/believer/wod-elm.git
 $ cd wod-elm
 $ npm install
 $ npm run start
