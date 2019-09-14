@@ -121,6 +121,14 @@ filterBySelectedWorkoutType workoutType wod =
 
 view : Model -> Document Msg
 view ({ category, workoutType } as model) =
+    let
+        filteredWods =
+            model.wods
+                |> List.filter (filterBySelectedCategory category)
+                |> List.filter (filterBySelectedWorkoutType workoutType)
+                |> List.reverse
+                |> List.map (card model)
+    in
     { title = "WillWOD"
     , body =
         [ div [ class "grid mt-10 mb-20" ]
@@ -154,14 +162,17 @@ view ({ category, workoutType } as model) =
                         ]
                     ]
                 ]
-            , div
-                [ class "grid--cards" ]
-                (model.wods
-                    |> List.filter (filterBySelectedCategory category)
-                    |> List.filter (filterBySelectedWorkoutType workoutType)
-                    |> List.reverse
-                    |> List.map (card model)
-                )
+            , case filteredWods |> List.length of
+                0 ->
+                    div
+                        [ class "bg-white text-center p-8 rounded text-gray-600 css-u6g5pn"
+                        ]
+                        [ text "I don't have any WODs with this combination yet 💪" ]
+
+                _ ->
+                    div
+                        [ class "grid--cards" ]
+                        filteredWods
             ]
         ]
     }
