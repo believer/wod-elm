@@ -1,12 +1,12 @@
 module View exposing (..)
 
 import Html exposing (Attribute, Html, a, button, div, header, li, span, text, ul)
-import Html.Attributes exposing (class, classList, href, rel, target)
+import Html.Attributes exposing (class, classList, href, rel, target, type_)
 import Html.Events exposing (onClick)
 import Markdown
 import Types exposing (..)
 import WodHelpers exposing (weightToString)
-import Wods exposing (Category, Wod, WodPart, WorkoutType)
+import Wods
 
 
 pillStyle : String
@@ -14,7 +14,7 @@ pillStyle =
     "inline-block rounded-full px-3 py-1 text-sm font-semibold text-center"
 
 
-pill : Maybe Category -> Html Msg
+pill : Maybe Wods.Category -> Html Msg
 pill category =
     case category of
         Just Wods.Hero ->
@@ -51,7 +51,7 @@ pill category =
             text ""
 
 
-wodExercises : DecimalSystem -> WodPart -> Html Msg
+wodExercises : DecimalSystem -> Wods.WodPart -> Html Msg
 wodExercises decimalSystem exercise =
     li []
         [ div []
@@ -84,7 +84,7 @@ filterButtonActive =
     "bg-blue-200 text-blue-700"
 
 
-workoutCategoryButton : Maybe Category -> Maybe Category -> String -> Html Msg
+workoutCategoryButton : Maybe Wods.Category -> Maybe Wods.Category -> String -> Html Msg
 workoutCategoryButton currentCategory category buttonText =
     button
         [ filterButtonStyle
@@ -98,7 +98,7 @@ workoutCategoryButton currentCategory category buttonText =
         [ text buttonText ]
 
 
-workoutTypeButton : Maybe WorkoutType -> Maybe WorkoutType -> String -> Html Msg
+workoutTypeButton : Maybe Wods.WorkoutType -> Maybe Wods.WorkoutType -> String -> Html Msg
 workoutTypeButton currentWorkoutType workoutType buttonText =
     button
         [ filterButtonStyle
@@ -112,7 +112,14 @@ workoutTypeButton currentWorkoutType workoutType buttonText =
         [ text buttonText ]
 
 
-card : Model -> Wod -> Html Msg
+listParts : List Wods.WodPart -> Model -> List (Html Msg)
+listParts wodParts model =
+    wodParts
+        |> List.map
+            (wodExercises model.decimalSystem)
+
+
+card : Model -> Wods.Wod -> Html Msg
 card model wod =
     div [ class "bg-white rounded shadow-lg flex flex-col justify-between" ]
         [ div [ class "p-6" ]
@@ -125,9 +132,17 @@ card model wod =
                 ]
             , roundsForTime wod.rounds
             , ul [ class "text-gray-700 mt-4" ]
-                (wod.parts
-                    |> List.map
-                        (wodExercises model.decimalSystem)
+                (case wod.workoutLevel of
+                    Wods.RX ->
+                        listParts wod.parts model
+
+                    Wods.Scaled ->
+                        case wod.scaledParts of
+                            Just parts ->
+                                listParts parts model
+
+                            Nothing ->
+                                listParts wod.parts model
                 )
             , case wod.timeCap of
                 Just timeCap ->
@@ -164,4 +179,21 @@ card model wod =
                 Nothing ->
                     text ""
             ]
+        , case wod.scaledParts of
+            Just _ ->
+                button
+                    [ class "bg-gray-200 rounded-b py-3 text-sm text-gray-600 font-semibold hover:bg-gray-300"
+                    , onClick (ChangeWorkoutLevel wod)
+                    , type_ "button"
+                    ]
+                    [ case wod.workoutLevel of
+                        Wods.RX ->
+                            text "Switch to scaled"
+
+                        Wods.Scaled ->
+                            text "Switch to RX"
+                    ]
+
+            Nothing ->
+                text ""
         ]

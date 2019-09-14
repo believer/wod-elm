@@ -2,7 +2,7 @@ module Types exposing (DecimalSystem(..), Model, Msg(..))
 
 import Browser.Navigation exposing (Key)
 import Url exposing (Url)
-import Wods exposing (Category, WorkoutType)
+import Wods exposing (Category, Wod, WorkoutType)
 
 
 type DecimalSystem
@@ -16,6 +16,7 @@ type Msg
     | FilterOnWorkoutType (Maybe WorkoutType)
     | UrlChanged Url
     | UpdateDecimalSystem
+    | ChangeWorkoutLevel Wod
 
 
 type alias Model =
@@ -23,4 +24,5 @@ type alias Model =
     , workoutType : Maybe WorkoutType
     , decimalSystem : DecimalSystem
     , navigationKey : Key
+    , wods : List Wod
     }

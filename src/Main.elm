@@ -9,7 +9,7 @@ import Types exposing (..)
 import Url exposing (Url)
 import Url.Parser as Parser exposing ((</>))
 import View exposing (card)
-import Wods exposing (Wod, wods)
+import Wods exposing (Wod, WorkoutLevel(..), wods)
 
 
 type alias Flags =
@@ -26,6 +26,7 @@ init _ _ key =
       , workoutType = Nothing
       , navigationKey = key
       , decimalSystem = Metric
+      , wods = wods
       }
     , Cmd.none
     )
@@ -55,8 +56,32 @@ update msg model =
                 Imperial ->
                     ( { model | decimalSystem = Metric }, Cmd.none )
 
+        ChangeWorkoutLevel wod ->
+            ( { model
+                | wods =
+                    model.wods
+                        |> List.map
+                            (toggleWorkoutLevel wod.name)
+              }
+            , Cmd.none
+            )
+
         NoOp ->
             ( model, Cmd.none )
+
+
+toggleWorkoutLevel : String -> Wod -> Wod
+toggleWorkoutLevel name wod =
+    if wod.name == name then
+        case wod.workoutLevel of
+            RX ->
+                { wod | workoutLevel = Scaled }
+
+            Scaled ->
+                { wod | workoutLevel = RX }
+
+    else
+        wod
 
 
 
@@ -129,7 +154,7 @@ view ({ category, workoutType } as model) =
                 ]
             , div
                 [ class "grid--cards" ]
-                (wods
+                (model.wods
                     |> List.filter (filterBySelectedCategory category)
                     |> List.filter (filterBySelectedWorkoutType workoutType)
                     |> List.reverse

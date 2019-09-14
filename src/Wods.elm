@@ -12,6 +12,11 @@ type Category
     | Wodapalooza Int
 
 
+type WorkoutLevel
+    = RX
+    | Scaled
+
+
 type WodReps
     = Num Int
     | Cal2 Int Int
@@ -35,6 +40,7 @@ type Exercise
     | Row
     | ToesToBar
     | WallBall
+    | WeightedButterflySitUp
 
 
 type alias WodPart =
@@ -50,9 +56,11 @@ type alias Wod =
     , workoutType : WorkoutType
     , description : Maybe String
     , parts : List WodPart
+    , scaledParts : Maybe (List WodPart)
     , rounds : Maybe Int
     , timeCap : Maybe Int
     , externalLink : Maybe ( String, String )
+    , workoutLevel : WorkoutLevel
     }
 
 
@@ -92,6 +100,9 @@ exerciseToString exercise =
         WallBall ->
             "wall ball"
 
+        WeightedButterflySitUp ->
+            "weighted butterfly sit-up"
+
 
 exerciseAmount : WodReps -> String
 exerciseAmount reps =
@@ -121,6 +132,8 @@ wods =
               , exercise = CleanAndJerk
               }
             ]
+      , scaledParts = Nothing
+      , workoutLevel = RX
       }
     , { name = "DT"
       , category = Just Hero
@@ -143,6 +156,8 @@ wods =
               , exercise = PushJerk
               }
             ]
+      , scaledParts = Nothing
+      , workoutLevel = RX
       }
     , { name = "Devil in the Row"
       , category = Nothing
@@ -165,6 +180,8 @@ wods =
               , exercise = DevilPress
               }
             ]
+      , scaledParts = Nothing
+      , workoutLevel = RX
       }
     , { name = "190617-Mayhem"
       , category = Nothing
@@ -210,10 +227,12 @@ Each set EMOM 5 min, then 1 min rest before next EMOM.
               , exercise = PowerClean
               }
             ]
+      , scaledParts = Nothing
+      , workoutLevel = RX
       }
     , { name = "WZAOC 4"
       , category = Just (Wodapalooza 2019)
-      , workoutType = EMOM 23
+      , workoutType = ForTime
       , rounds = Nothing
       , description = Just """
 Perform in any order, until completion of total work. Can be broken down or performed in any order.
@@ -230,5 +249,17 @@ Perform in any order, until completion of total work. Can be broken down or perf
               , exercise = ToesToBar
               }
             ]
+      , scaledParts =
+            Just
+                [ { reps = Num 100
+                  , weight = ( Just (Kg 6), Just (Kg 4) )
+                  , exercise = WallBall
+                  }
+                , { reps = Num 50
+                  , weight = ( Nothing, Nothing )
+                  , exercise = WeightedButterflySitUp
+                  }
+                ]
+      , workoutLevel = RX
       }
     ]
