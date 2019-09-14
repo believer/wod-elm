@@ -6,6 +6,14 @@ favorite ReasonML.
 
 This project is bootstrapped with [Create Elm App](https://github.com/halfzebra/create-elm-app).
 
+## Prerequisites
+You'll need to install Elm before getting started. If you want additional features (formatting, testing, code completion), see [this section](https://github.com/ElmCast/elm-vim#requirements) for more packages to install.
+
+```sh
+$ npm install -g elm
+```
+
+
 ## Get started
 
 ```sh
