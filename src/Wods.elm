@@ -9,6 +9,7 @@ type WorkoutType
 type Category
     = Hero
     | Girl
+    | Wodapalooza Int
 
 
 type WodReps
@@ -51,6 +52,7 @@ type alias Wod =
     , parts : List WodPart
     , rounds : Maybe Int
     , timeCap : Maybe Int
+    , externalLink : Maybe ( String, String )
     }
 
 
@@ -112,6 +114,7 @@ wods =
       , rounds = Nothing
       , description = Nothing
       , timeCap = Nothing
+      , externalLink = Nothing
       , parts =
             [ { reps = Num 30
               , weight = ( Just (Kg 61), Just (Kg 43) )
@@ -125,6 +128,7 @@ wods =
       , rounds = Just 5
       , description = Nothing
       , timeCap = Nothing
+      , externalLink = Nothing
       , parts =
             [ { reps = Num 12
               , weight = ( Just (Kg 70), Just (Kg 47) )
@@ -146,6 +150,7 @@ wods =
       , rounds = Just 10
       , description = Just "Perfect pacing practice, try to keep the same pace through all ten rounds."
       , timeCap = Nothing
+      , externalLink = Nothing
       , parts =
             [ { reps = Cal2 9 7
               , weight = ( Nothing, Nothing )
@@ -174,6 +179,7 @@ Each set EMOM 5 min, then 1 min rest before next EMOM.
 * Last set (5 reps) same as first set
       """
       , timeCap = Nothing
+      , externalLink = Nothing
       , parts =
             [ { reps = Num 5
               , weight = ( Nothing, Nothing )
@@ -206,13 +212,14 @@ Each set EMOM 5 min, then 1 min rest before next EMOM.
             ]
       }
     , { name = "WZAOC 4"
-      , category = Nothing
+      , category = Just (Wodapalooza 2019)
       , workoutType = EMOM 23
       , rounds = Nothing
       , description = Just """
 Perform in any order, until completion of total work. Can be broken down or performed in any order.
       """
       , timeCap = Just 20
+      , externalLink = Just ( "Wodapalooza", "https://wodapalooza.com/workout/2019-2020-indy-oc-wod-4/" )
       , parts =
             [ { reps = Num 150
               , weight = ( Just (Kg 9), Just (Kg 6) )

@@ -66,6 +66,9 @@ update msg model =
 filterBySelectedCategory : Maybe Wods.Category -> Wod -> Bool
 filterBySelectedCategory category wod =
     case ( category, wod.category ) of
+        ( Just (Wods.Wodapalooza _), Just (Wods.Wodapalooza _) ) ->
+            True
+
         ( Just cat, Just wCat ) ->
             cat == wCat
 
@@ -100,16 +103,17 @@ view ({ category, workoutType } as model) =
             [ div [ class "grid--center mb-10 md:flex justify-between items-center" ]
                 [ div []
                     [ div [ class "mb-2" ]
-                        [ View.workoutCategoryButton category Nothing "All"
-                        , View.workoutCategoryButton category (Just Wods.Girl) "Girl"
-                        , View.workoutCategoryButton category (Just Wods.Hero) "Hero"
-                        ]
-                    , div []
                         [ View.workoutTypeButton workoutType Nothing "All"
                         , View.workoutTypeButton workoutType (Just Wods.ForTime) "For Time"
                         , View.workoutTypeButton workoutType
                             (Just (Wods.EMOM 0))
                             "EMOM"
+                        ]
+                    , div []
+                        [ View.workoutCategoryButton category Nothing "All"
+                        , View.workoutCategoryButton category (Just Wods.Girl) "Girl"
+                        , View.workoutCategoryButton category (Just Wods.Hero) "Hero"
+                        , View.workoutCategoryButton category (Just (Wods.Wodapalooza 0)) "Wodapalooza"
                         ]
                     ]
                 , div [ class "flex items-center mt-4 md:mt-0" ]

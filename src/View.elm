@@ -1,7 +1,7 @@
 module View exposing (..)
 
 import Html exposing (Attribute, Html, a, button, div, header, li, span, text, ul)
-import Html.Attributes exposing (class, classList, href)
+import Html.Attributes exposing (class, classList, href, rel, target)
 import Html.Events exposing (onClick)
 import Markdown
 import Types exposing (..)
@@ -9,17 +9,42 @@ import WodHelpers exposing (weightToString)
 import Wods exposing (Category, Wod, WodPart, WorkoutType)
 
 
+pillStyle : String
+pillStyle =
+    "inline-block rounded-full px-3 py-1 text-sm font-semibold text-center"
+
+
 pill : Maybe Category -> Html Msg
 pill category =
     case category of
         Just Wods.Hero ->
-            div [ class "inline-block rounded-full px-3 py-1 text-sm font-semibold text-center bg-green-200 text-green-700" ]
+            div
+                [ classList
+                    [ ( pillStyle, True )
+                    , ( "bg-green-200 text-green-700", True )
+                    ]
+                ]
                 [ text "Hero"
                 ]
 
         Just Wods.Girl ->
-            div [ class "inline-block rounded-full px-3 py-1 text-sm font-semibold text-center bg-pink-200 text-pink-700" ]
+            div
+                [ classList
+                    [ ( pillStyle, True )
+                    , ( "bg-pink-200 text-pink-700", True )
+                    ]
+                ]
                 [ text "The Girls"
+                ]
+
+        Just (Wods.Wodapalooza year) ->
+            div
+                [ classList
+                    [ ( pillStyle, True )
+                    , ( "bg-gray-200 text-gray-700", True )
+                    ]
+                ]
+                [ text ("Wodapalooza " ++ String.fromInt year)
                 ]
 
         Nothing ->
@@ -104,14 +129,6 @@ card model wod =
                     |> List.map
                         (wodExercises model.decimalSystem)
                 )
-            , case wod.description of
-                Just description ->
-                    div [ class "mt-4 text-xs text-gray-500 markdown" ]
-                        [ Markdown.toHtml [ class "markdown" ] description
-                        ]
-
-                Nothing ->
-                    text ""
             , case wod.timeCap of
                 Just timeCap ->
                     div [ class "mt-4 text-sm text-gray-700" ]
@@ -121,6 +138,27 @@ card model wod =
                             ]
                             [ text "Time cap:" ]
                         , text (" " ++ String.fromInt timeCap ++ " min")
+                        ]
+
+                Nothing ->
+                    text ""
+            , case wod.description of
+                Just description ->
+                    div [ class "mt-4 text-xs text-gray-500 markdown" ]
+                        [ Markdown.toHtml [ class "markdown" ] description
+                        ]
+
+                Nothing ->
+                    text ""
+            , case wod.externalLink of
+                Just ( linkText, link ) ->
+                    a
+                        [ class "text-blue-600 text-xs block mt-2"
+                        , href link
+                        , rel "noopener noreferrer"
+                        , target "_blank"
+                        ]
+                        [ text linkText
                         ]
 
                 Nothing ->
