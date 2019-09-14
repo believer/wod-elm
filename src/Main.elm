@@ -2,8 +2,9 @@ module Main exposing (..)
 
 import Browser exposing (Document, UrlRequest)
 import Browser.Navigation as Nav exposing (Key)
-import Html exposing (div)
+import Html exposing (button, div, text)
 import Html.Attributes exposing (class)
+import Html.Events exposing (onClick)
 import Types exposing (..)
 import Url exposing (Url)
 import Url.Parser as Parser exposing ((</>))
@@ -19,16 +20,15 @@ type alias Flags =
 ---- MODEL ----
 
 
-type alias Model =
-    { category : Maybe Wods.Category
-    , workoutType : Maybe Wods.WorkoutType
-    , navigationKey : Key
-    }
-
-
 init : Flags -> Url -> Key -> ( Model, Cmd Msg )
 init _ _ key =
-    ( { category = Nothing, workoutType = Nothing, navigationKey = key }, Cmd.none )
+    ( { category = Nothing
+      , workoutType = Nothing
+      , navigationKey = key
+      , decimalSystem = Metric
+      }
+    , Cmd.none
+    )
 
 
 
@@ -45,11 +45,15 @@ update msg model =
             ( { model | workoutType = workoutType }, Cmd.none )
 
         UrlChanged url ->
-            let
-                _ =
-                    Debug.log "url" url
-            in
             ( model, Nav.pushUrl model.navigationKey (Url.toString url) )
+
+        UpdateDecimalSystem ->
+            case model.decimalSystem of
+                Metric ->
+                    ( { model | decimalSystem = Imperial }, Cmd.none )
+
+                Imperial ->
+                    ( { model | decimalSystem = Metric }, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )
@@ -89,11 +93,11 @@ filterBySelectedWorkoutType workoutType wod =
 
 
 view : Model -> Document Msg
-view { category, workoutType } =
+view ({ category, workoutType } as model) =
     { title = "WillWOD"
     , body =
         [ div [ class "grid mt-10 mb-20" ]
-            [ div [ class "grid--cards mb-10 md:flex justify-between items-center" ]
+            [ div [ class "grid--center mb-10 md:flex justify-between items-center" ]
                 [ div []
                     [ div [ class "mb-2" ]
                         [ View.workoutCategoryButton category Nothing "All"
@@ -108,13 +112,23 @@ view { category, workoutType } =
                             "EMOM"
                         ]
                     ]
+                , div [ class "flex items-center mt-4 md:mt-0" ]
+                    [ button [ class "bg-blue-500 hover:bg-blue-700\n                    text-white\n\n                    font-bold py-2 px-4\n                    rounded-full", onClick UpdateDecimalSystem ]
+                        [ case model.decimalSystem of
+                            Metric ->
+                                text "Imperial"
+
+                            Imperial ->
+                                text "Metric"
+                        ]
+                    ]
                 ]
             , div
                 [ class "grid--cards" ]
                 (wods
                     |> List.filter (filterBySelectedCategory category)
                     |> List.filter (filterBySelectedWorkoutType workoutType)
-                    |> List.map card
+                    |> List.map (card model)
                 )
             ]
         ]

@@ -50,39 +50,6 @@ type alias Wod =
     }
 
 
-unitToString : WodWeight -> String
-unitToString weight =
-    case weight of
-        Kg _ ->
-            " kg"
-
-        Cm _ ->
-            " cm"
-
-
-toSplit : Float -> Float -> WodWeight -> String
-toSplit a b weight =
-    " ("
-        ++ String.fromFloat a
-        ++ "/"
-        ++ String.fromFloat b
-        ++ unitToString weight
-        ++ ")"
-
-
-weightToString : ( Maybe WodWeight, Maybe WodWeight ) -> String
-weightToString unit =
-    case unit of
-        ( Just (Kg a), Just (Kg b) ) ->
-            toSplit a b (Kg a)
-
-        ( Just (Cm a), Just (Cm b) ) ->
-            toSplit a b (Cm a)
-
-        ( _, _ ) ->
-            ""
-
-
 exerciseToString : Exercise -> String
 exerciseToString exercise =
     case exercise of

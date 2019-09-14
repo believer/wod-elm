@@ -4,6 +4,7 @@ import Html exposing (Attribute, Html, a, button, div, header, li, span, text, u
 import Html.Attributes exposing (class, classList, href)
 import Html.Events exposing (onClick)
 import Types exposing (..)
+import WodHelpers exposing (weightToString)
 import Wods exposing (Category, Wod, WodPart, WorkoutType)
 
 
@@ -24,14 +25,14 @@ pill category =
             text ""
 
 
-wodExercises : WodPart -> Html Msg
-wodExercises exercise =
+wodExercises : DecimalSystem -> WodPart -> Html Msg
+wodExercises decimalSystem exercise =
     li []
         [ div []
             [ text (Wods.exerciseAmount exercise.reps ++ " ")
             , text (Wods.exerciseToString exercise.exercise)
             , span [ class "text-gray-500" ]
-                [ text (Wods.weightToString exercise.weight)
+                [ text (weightToString exercise.weight decimalSystem)
                 ]
             ]
         ]
@@ -85,8 +86,8 @@ workoutTypeButton currentWorkoutType workoutType buttonText =
         [ text buttonText ]
 
 
-card : Wod -> Html Msg
-card wod =
+card : Model -> Wod -> Html Msg
+card model wod =
     div [ class "bg-white rounded shadow-lg flex flex-col justify-between" ]
         [ div [ class "p-6" ]
             [ header [ class "flex items-center justify-between" ]
@@ -97,6 +98,10 @@ card wod =
                     wod.category
                 ]
             , roundsForTime wod.rounds
-            , ul [ class "text-gray-700 mt-4" ] (wod.parts |> List.map wodExercises)
+            , ul [ class "text-gray-700 mt-4" ]
+                (wod.parts
+                    |> List.map
+                        (wodExercises model.decimalSystem)
+                )
             ]
         ]
