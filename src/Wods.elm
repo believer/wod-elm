@@ -139,7 +139,9 @@ wods =
       , category = Just Hero
       , workoutType = ForTime
       , rounds = Just 5
-      , description = Nothing
+      , description = Just """
+In honor of US Air Force SSgt Timothy P. Davis, 28, who was killed on Feburary, 20 2009 supporting operations in OEF when his vehicle was struck by an IED.
+      """
       , timeCap = Nothing
       , externalLink = Nothing
       , parts =
