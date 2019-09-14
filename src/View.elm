@@ -112,5 +112,18 @@ card model wod =
 
                 Nothing ->
                     text ""
+            , case wod.timeCap of
+                Just timeCap ->
+                    div [ class "mt-4 text-sm text-gray-700" ]
+                        [ span
+                            [ class
+                                "font-semibold"
+                            ]
+                            [ text "Time cap:" ]
+                        , text (" " ++ String.fromInt timeCap ++ " min")
+                        ]
+
+                Nothing ->
+                    text ""
             ]
         ]
