@@ -1,4 +1,4 @@
-module View exposing (card)
+module View exposing (card, workoutCategoryButton, workoutTypeButton)
 
 import Html exposing (Attribute, Html, a, button, div, header, li, span, text, ul)
 import Html.Attributes exposing (class, classList, href, rel, target, type_)
