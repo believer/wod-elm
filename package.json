@@ -1,6 +1,6 @@
 {
   "name": "wod-elm",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "This is a port of my [WOD](https://github.com/believer/wod) project to Elm 0.19. Mostly for fun and trying out if Elm is a possible contender with my current favorite ReasonML.",
   "main": "index.js",
   "directories": {
