@@ -1,0 +1,31 @@
+ jobs:
+  include:
+    - stage: test
+      language: node_js
+      node_js:
+        - 12
+      install:
+        - npm ci
+      script:
+        - npm test
+    - stage: release
+      language: node_js
+      node_js:
+        - 12
+      script:
+        - npx semantic-release
+    - stage: deploy
+      language: node_js
+      node_js:
+        - 12
+      install:
+        - npm i -g now
+      script:
+        - now --token=$NOW_TOKEN --prod
+stages:
+  - test
+  - release
+    if: branch = master AND type != pull_request
+  - deploy
+    if: branch = master AND type != pull_request
+
