@@ -1,10 +1,10 @@
-module View exposing (..)
+module View exposing (card)
 
 import Html exposing (Attribute, Html, a, button, div, header, li, span, text, ul)
 import Html.Attributes exposing (class, classList, href, rel, target, type_)
 import Html.Events exposing (onClick)
 import Markdown
-import Types exposing (..)
+import Types exposing (DecimalSystem(..), Model, Msg(..))
 import WodHelpers exposing (weightToString)
 import Wods
 

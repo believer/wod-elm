@@ -44,6 +44,11 @@ img {
   grid-column: 3/4;
 }
 
+.grid--glossary {
+  display: grid;
+  grid-template-columns: 20px 1fr minmax(300px, 600px) 1fr 20px;
+}
+
 .markdown ul {
   list-style: disc;
   margin-left: 1rem;

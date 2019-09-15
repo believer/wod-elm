@@ -1,6 +1,6 @@
 module WodHelpers exposing (weightToString)
 
-import Types exposing (..)
+import Types exposing (DecimalSystem(..))
 import Wods exposing (WodWeight(..))
 
 

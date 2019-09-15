@@ -1,6 +1,8 @@
 module Types exposing (DecimalSystem(..), Model, Msg(..))
 
+import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
+import Routes exposing (Route)
 import Url exposing (Url)
 import Wods exposing (Category, Wod, WorkoutType)
 
@@ -14,10 +16,11 @@ type Msg
     = NoOp
     | FilterOnCategory (Maybe Category)
     | FilterOnWorkoutType (Maybe WorkoutType)
-    | UrlChanged Url
     | UpdateDecimalSystem
     | ChangeWorkoutLevel Wod
     | UpdateQuery String
+    | OnUrlChange Url
+    | OnUrlRequest UrlRequest
 
 
 type alias Model =
@@ -27,4 +30,5 @@ type alias Model =
     , navigationKey : Key
     , searchQuery : String
     , wods : List Wod
+    , route : Route
     }
