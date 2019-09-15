@@ -1,5 +1,7 @@
 # WOD Elm
 
+[![Build Status](https://travis-ci.com/believer/wod-elm.svg?branch=master)](https://travis-ci.com/believer/wod-elm)
+
 This is a port of my [WOD](https://github.com/believer/wod) project to Elm 0.19.
 Mostly for fun and trying out if Elm is a possible contender with my current
 favorite ReasonML.
